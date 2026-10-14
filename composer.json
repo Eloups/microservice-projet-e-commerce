@@ -1,5 +1,9 @@
 {
     "name": "eloud/microservice-projet-e-commerce",
+    "scripts": {
+        "dev": "php -S 127.0.0.1:3000",
+        "lint": "vendor/bin/phpstan analyse src tests index.php"
+    },
     "autoload": {
         "psr-4": {
             "Eloud\\MicroserviceProjetECommerce\\": "src/"
@@ -11,5 +15,7 @@
             "email": "eloudeedee@gmail.com"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "phpstan/phpstan": "*"
+    }
 }
