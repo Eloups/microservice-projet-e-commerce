@@ -1,0 +1,15 @@
+{
+    "name": "eloud/microservice-projet-e-commerce",
+    "autoload": {
+        "psr-4": {
+            "Eloud\\MicroserviceProjetECommerce\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Eloups",
+            "email": "eloudeedee@gmail.com"
+        }
+    ],
+    "require": {}
+}
