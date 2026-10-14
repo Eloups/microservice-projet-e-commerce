@@ -2,7 +2,7 @@
     "name": "eloud/microservice-projet-e-commerce",
     "scripts": {
         "dev": "php -S 127.0.0.1:3000",
-        "lint": "vendor/bin/phpstan analyse src tests index.php"
+        "lint": "vendor/bin/phpstan analyse index.php src"
     },
     "autoload": {
         "psr-4": {

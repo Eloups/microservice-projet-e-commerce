@@ -12,12 +12,12 @@ TODO
 ### Ports
 #### IN
 
-- TODO
+- Router TODO
 
 #### OUT
 
-- TODO
-- TODO
+- Database TODO
+- Event Bus TODO
 
 ### Design pattern
 
