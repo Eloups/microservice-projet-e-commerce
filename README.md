@@ -27,7 +27,7 @@ TODO
 ### Evénements
 
 - Publier TODO
-- Consommer TOD
+- Consommer TODO
 
 ### Simulation de panne
 
