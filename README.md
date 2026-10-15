@@ -1,4 +1,9 @@
 # TP Architectures logicielles
+
+Ce code représente le microservice **Cart** de notre projet e-commerce.
+
+Ce microservice comprend la gestion des paniers de notre site. 
+
 ## Authors
 
 - TISSIER Elouan
