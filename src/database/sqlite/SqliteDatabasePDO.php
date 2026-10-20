@@ -35,9 +35,6 @@ class SqliteDatabasePDO
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $this->pdo->exec('PRAGMA foreign_keys = ON');
-
-        $this->createSchema();
-        $this->seedIfEmpty();
     }
 
     /**
@@ -121,8 +118,9 @@ class SqliteDatabasePDO
 
     /**
      * Cree les tables si elles n'existent pas.
+     * A appeler explicitement (cf. data/init.php).
      */
-    private function createSchema(): void
+    public function createSchema(): void
     {
         $this->pdo->exec('
             CREATE TABLE IF NOT EXISTS users (
@@ -155,8 +153,9 @@ class SqliteDatabasePDO
 
     /**
      * Insere des donnees de demonstration si la base est vierge.
+     * A appeler explicitement (cf. data/init.php).
      */
-    private function seedIfEmpty(): void
+    public function seedIfEmpty(): void
     {
         $count = (int) $this->pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
         if ($count > 0) {
