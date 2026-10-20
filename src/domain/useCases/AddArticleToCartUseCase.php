@@ -8,7 +8,8 @@ use MicroserviceProjetECommerce\Domain\Ports\IPortOUTDatabase;
 /**
  * UseCase pour ajouter un article au panier
  */
-class AddArticleToCartUseCase {
+class AddArticleToCartUseCase
+{
     /**
      * Fonction d'exécution du cas d'utilisation
      * @param int $cartId
@@ -16,7 +17,8 @@ class AddArticleToCartUseCase {
      * @param IPortOUTDatabase $databaseAdapter
      * @return Cart
      */
-    public function run(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter): Cart {
-        $databaseAdapter->addArticleToCart($cartId, $articleId);
+    public function run(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter): Cart
+    {
+        return $databaseAdapter->addArticleToCart($cartId, $articleId);
     }
 }
