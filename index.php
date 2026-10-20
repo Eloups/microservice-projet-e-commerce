@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
+use MicroserviceProjetECommerce\Adapters\RoutingAdapter;
+use MicroserviceProjetECommerce\Adapters\SqliteDatabaseAdapter;
+use MicroserviceProjetECommerce\Domain\Entities\Cart;
 use MicroserviceProjetECommerce\Router\Router;
 
 $router = new Router();
 
 $router->post('cart_add_article', '/cart/addArticle', function (int $cartId, int $articleId): array {
-    // TODO: déléguer au port entrant du domaine (RoutingAdapter::runAddArticleToCastCase)
-    return ['cartId' => $cartId, 'articleId' => $articleId];
+    $routingAdapter = new RoutingAdapter();
+    $databaseAdapter = new SqliteDatabaseAdapter();
+    $cart =  $routingAdapter->runAddArticleToCastCase($cartId, $articleId, $databaseAdapter);
+    return [json_encode($cart)];
 });
 
 $method = $_SERVER['REQUEST_METHOD'];
