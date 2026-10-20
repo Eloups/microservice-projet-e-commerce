@@ -1,4 +1,9 @@
 # TP Architectures logicielles
+
+Ce code représente le microservice **Cart** de notre projet e-commerce.
+
+Ce microservice comprend la gestion des paniers de notre site. 
+
 ## Authors
 
 - TISSIER Elouan
@@ -12,12 +17,12 @@ TODO
 ### Ports
 #### IN
 
-- TODO
+- Router TODO
 
 #### OUT
 
-- TODO
-- TODO
+- Database TODO
+- Event Bus TODO
 
 ### Design pattern
 
@@ -27,7 +32,7 @@ TODO
 ### Evénements
 
 - Publier TODO
-- Consommer TOD
+- Consommer TODO
 
 ### Simulation de panne
 
