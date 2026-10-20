@@ -39,6 +39,7 @@ class Cart {
     public function __construct(int $id, User $user, bool $isValidate, ?array $articles = null) {
         $this->id = $id;
         $this->user = $user;
+        $this->isValidate = $isValidate;
         $this->articles = $articles ?? [];
     }
 
