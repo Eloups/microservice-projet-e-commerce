@@ -1,0 +1,17 @@
+type: workspace
+model: workspace
+id: wk_FtLuYtMKXD
+createdAt: 2026-10-20T16:09:59.497592800
+updatedAt: 2026-10-20T16:09:59.497594600
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: TP-architecture
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0
+settingDnsOverrides: []
+settingSendCookies: true
+settingStoreCookies: true
