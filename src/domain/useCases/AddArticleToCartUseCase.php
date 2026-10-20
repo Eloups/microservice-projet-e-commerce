@@ -1,9 +1,9 @@
 <?php
 
-namespace Src\Domain\UseCases;
+namespace MicroserviceProjetECommerce\Domain\UseCases;
 
-use Src\Domain\Entities\Cart;
-use Src\Domain\Ports\IPortOUTDatabase;
+use MicroserviceProjetECommerce\Domain\Entities\Cart;
+use MicroserviceProjetECommerce\Domain\Ports\IPortOUTDatabase;
 
 /**
  * UseCase pour ajouter un article au panier

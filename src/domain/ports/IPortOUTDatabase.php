@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\Domain\Ports;
+namespace MicroserviceProjetECommerce\Domain\Ports;
 
-use Src\Domain\Entities\Cart;
+use MicroserviceProjetECommerce\Domain\Entities\Cart;
 
 interface IPortOUTDatabase {
     /**

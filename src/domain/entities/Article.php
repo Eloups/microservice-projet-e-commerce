@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Domain\Entities;
+namespace MicroserviceProjetECommerce\Domain\Entities;
 
 /**
  * Entitée Article

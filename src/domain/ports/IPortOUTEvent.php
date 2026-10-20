@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Domain\Ports;
+namespace MicroserviceProjetECommerce\Domain\Ports;
 
 interface IPortOUTEvent {
     // TODO
