@@ -12,4 +12,11 @@ interface IPortOUTDatabase {
      * @return Cart
      */
     public function addArticleToCart(int $cartId, int $articleId): Cart;
+
+    /**
+     * Valide le panier en BDD
+     * @param int $cartId
+     * @return Cart
+     */
+    public function validateCart(int $cartId): Cart;
 }

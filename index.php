@@ -7,22 +7,46 @@ require __DIR__ . '/vendor/autoload.php';
 use MicroserviceProjetECommerce\Adapters\RoutingAdapter;
 use MicroserviceProjetECommerce\Adapters\SqliteDatabaseAdapter;
 use MicroserviceProjetECommerce\Adapters\SqliteEventAdapter;
+use MicroserviceProjetECommerce\Domain\Errors\CartAlreadyValidatedException;
 use MicroserviceProjetECommerce\Router\Router;
 use MicroserviceProjetECommerce\Utils\ErrorResponse;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 $router = new Router();
+$serializer = new Serializer([new ObjectNormalizer()]);
 
-$router->post('cart_add_article', '/cart/addArticle', function (int $cartId, int $articleId): array {
+$router->post('cart_add_article', '/cart/addArticle', function (array $params) use ($serializer): array {
+    $cartId = (int) ($params['cartId'] ?? 0);
+    $articleId = (int) ($params['articleId'] ?? 0);
+    if ($cartId <= 0 || $articleId <= 0) {
+        ErrorResponse::send(400, 'Parametres requis : cartId (entier) et articleId (entier)');
+    }
+
     $routingAdapter = new RoutingAdapter();
-    $databaseAdapter = new SqliteDatabaseAdapter();
-    $eventAdapter = new SqliteEventAdapter();
-    $cart = $routingAdapter->runAddArticleToCastCase($cartId, $articleId, $databaseAdapter, $eventAdapter);
+    $cart = $routingAdapter->runAddArticleToCastCase(
+        $cartId,
+        $articleId,
+        new SqliteDatabaseAdapter(),
+        new SqliteEventAdapter()
+    );
 
-    // Normalisation du panier en tableau brut, l'encodage JSON final
-    // est fait en fin de script sur la reponse du controleur
-    $serializer = new Serializer([new ObjectNormalizer()]);
+    return $serializer->normalize($cart);
+});
+
+$router->post('cart_validate', '/cart/validate', function (array $params) use ($serializer): array {
+    $cartId = (int) ($params['cartId'] ?? 0);
+    if ($cartId <= 0) {
+        ErrorResponse::send(400, 'Parametre requis : cartId (entier)');
+    }
+
+    $routingAdapter = new RoutingAdapter();
+    $cart = $routingAdapter->runValidateCartCase(
+        $cartId,
+        new SqliteDatabaseAdapter(),
+        new SqliteEventAdapter()
+    );
+
     return $serializer->normalize($cart);
 });
 
@@ -37,17 +61,15 @@ if ($match === null) {
 
 $controller = $match['_controller'];
 
-// Paramètres de la requête : corps JSON, formulaire, ou query string
+// Parametres de la requete : corps JSON, formulaire, ou query string
 $body = json_decode(file_get_contents('php://input') ?: '[]', true) ?? [];
-$cartId = (int) ($body['cartId'] ?? $_POST['cartId'] ?? $_GET['cartId'] ?? 0);
-$articleId = (int) ($body['articleId'] ?? $_POST['articleId'] ?? $_GET['articleId'] ?? 0);
-
-if ($cartId <= 0 || $articleId <= 0) {
-    ErrorResponse::send(400, 'Parametres requis : cartId (entier) et articleId (entier)');
-}
+$params = array_merge($_GET, $_POST, $body);
 
 try {
-    $response = $controller($cartId, $articleId);
+    $response = $controller($params);
+} catch (CartAlreadyValidatedException $e) {
+    // Conflit metier : le panier est deja valide
+    ErrorResponse::send(409, $e->getMessage());
 } catch (PDOException $e) {
     // PDOException etend RuntimeException : a catcher avant elle
     ErrorResponse::send(500, $e->getMessage());

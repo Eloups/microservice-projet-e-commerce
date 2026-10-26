@@ -26,8 +26,8 @@ TODO
 
 ### Design pattern
 
-- Use Case TODO
-- TODO
+- Use Case pattern TODO
+- Adapter pattern pattern
 
 ### Evénements
 

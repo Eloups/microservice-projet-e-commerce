@@ -8,6 +8,7 @@ use MicroserviceProjetECommerce\Database\Sqlite\SqliteDatabasePDO;
 use MicroserviceProjetECommerce\Domain\Entities\Article;
 use MicroserviceProjetECommerce\Domain\Entities\Cart;
 use MicroserviceProjetECommerce\Domain\Entities\User;
+use MicroserviceProjetECommerce\Domain\Errors\CartAlreadyValidatedException;
 use MicroserviceProjetECommerce\Domain\Ports\IPortOUTDatabase;
 use RuntimeException;
 
@@ -34,14 +35,36 @@ class SqliteDatabaseAdapter implements IPortOUTDatabase
      */
     public function addArticleToCart(int $cartId, int $articleId): Cart
     {
-        if (!$this->database->cartExists($cartId)) {
+        $row = $this->database->getCartWithUser($cartId);
+        if ($row === null) {
             throw new RuntimeException("Panier inconnu : $cartId");
+        }
+        if ((bool) $row['is_validated']) {
+            throw new CartAlreadyValidatedException($cartId);
         }
         if (!$this->database->articleExists($articleId)) {
             throw new RuntimeException("Article inconnu : $articleId");
         }
 
         $this->database->addArticleToCart($cartId, $articleId);
+
+        return $this->fetchCart($cartId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateCart(int $cartId): Cart
+    {
+        $row = $this->database->getCartWithUser($cartId);
+        if ($row === null) {
+            throw new RuntimeException("Panier inconnu : $cartId");
+        }
+        if ((bool) $row['is_validated']) {
+            throw new CartAlreadyValidatedException($cartId);
+        }
+
+        $this->database->validateCart($cartId);
 
         return $this->fetchCart($cartId);
     }

@@ -31,4 +31,26 @@ class SqliteEventAdapter implements IPortOUTEvent
     {
         $this->database->publish($name, $payload);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPendingEvents(int $limit = 10): array
+    {
+        $events = [];
+        foreach ($this->database->getPendingEvents($limit) as $row) {
+            $row['payload'] = json_decode($row['payload'], true) ?? [];
+            $events[] = $row;
+        }
+
+        return $events;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function markConsumed(array $eventIds): void
+    {
+        $this->database->markConsumed($eventIds);
+    }
 }

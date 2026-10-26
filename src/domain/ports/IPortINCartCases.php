@@ -14,4 +14,13 @@ interface IPortINCartCases {
      * @return Cart
      */
     public function runAddArticleToCastCase(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter, IPortOUTEvent $eventAdapter): Cart;
+
+    /**
+     * Fonction pour lancer le UseCase de validation du panier
+     * @param int $cartId
+     * @param IPortOUTDatabase $databaseAdapter
+     * @param IPortOUTEvent $eventAdapter
+     * @return Cart
+     */
+    public function runValidateCartCase(int $cartId, IPortOUTDatabase $databaseAdapter, IPortOUTEvent $eventAdapter): Cart;
 }

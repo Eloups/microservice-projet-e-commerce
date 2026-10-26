@@ -101,6 +101,17 @@ class SqliteDatabasePDO
     }
 
     /**
+     * Passe un panier a l'etat valide.
+     */
+    public function validateCart(int $cartId): void
+    {
+        $stmt = $this->pdo->prepare('
+            UPDATE carts SET is_validated = 1 WHERE id = :cartId
+        ');
+        $stmt->execute(['cartId' => $cartId]);
+    }
+
+    /**
      * Verifie l'existence d'un article.
      */
     public function articleExists(int $articleId): bool
