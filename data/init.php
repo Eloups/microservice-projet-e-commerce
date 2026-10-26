@@ -15,13 +15,19 @@ use MicroserviceProjetECommerce\Database\Sqlite\SqliteDatabasePDO;
 
 $dbPath = __DIR__ . DIRECTORY_SEPARATOR . 'ecommerce.sqlite';
 
-if (file_exists($dbPath)) {
-    unlink($dbPath);
-    echo "Base existante supprimee : $dbPath\n";
-}
-
-// Ouverture de la connexion, creation explicite du schema puis du seed
+// Reinitialisation par DROP TABLE (et non par suppression du fichier) :
+// sur Windows, unlink() echoue si un serveur (composer dev) garde
+// le fichier SQLite ouvert.
 $db = new SqliteDatabasePDO($dbPath);
+$db->getPDO()->exec('
+    DROP TABLE IF EXISTS cart_articles;
+    DROP TABLE IF EXISTS carts;
+    DROP TABLE IF EXISTS articles;
+    DROP TABLE IF EXISTS users;
+');
+echo 'Tables existantes supprimees' . "\n";
+
+// Recreation explicite du schema puis du seed
 $db->createSchema();
 $db->seedIfEmpty();
 
