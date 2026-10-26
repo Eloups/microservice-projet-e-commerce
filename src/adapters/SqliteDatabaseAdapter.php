@@ -71,7 +71,8 @@ class SqliteDatabaseAdapter implements IPortOUTDatabase
                 (int) $articleRow['id'],
                 $articleRow['name'],
                 $articleRow['description'],
-                (float) $articleRow['price']
+                (float) $articleRow['price'],
+                (int) $articleRow['quantity']
             );
         }
 

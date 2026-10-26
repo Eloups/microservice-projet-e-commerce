@@ -47,13 +47,16 @@ class SqliteDatabasePDO
     }
 
     /**
-     * Insere un article dans un panier. Sans effet si l'association existe deja.
+     * Insere un article dans un panier avec une quantite de 1,
+     * ou incremente sa quantite s'il y est deja present.
      */
     public function addArticleToCart(int $cartId, int $articleId): void
     {
         $stmt = $this->pdo->prepare('
-            INSERT OR IGNORE INTO cart_articles (cart_id, article_id)
-            VALUES (:cartId, :articleId)
+            INSERT INTO cart_articles (cart_id, article_id, quantity)
+            VALUES (:cartId, :articleId, 1)
+            ON CONFLICT (cart_id, article_id)
+            DO UPDATE SET quantity = quantity + 1
         ');
         $stmt->execute(['cartId' => $cartId, 'articleId' => $articleId]);
     }
@@ -79,14 +82,14 @@ class SqliteDatabasePDO
     }
 
     /**
-     * Lignes des articles d'un panier.
+     * Lignes des articles d'un panier, avec leur quantite.
      *
-     * @return list<array{id: int, name: string, description: string, price: float}>
+     * @return list<array{id: int, name: string, description: string, price: float, quantity: int}>
      */
     public function getArticlesOfCart(int $cartId): array
     {
         $stmt = $this->pdo->prepare('
-            SELECT a.id, a.name, a.description, a.price
+            SELECT a.id, a.name, a.description, a.price, ca.quantity
             FROM articles a
             JOIN cart_articles ca ON ca.article_id = a.id
             WHERE ca.cart_id = :cartId
@@ -146,6 +149,7 @@ class SqliteDatabasePDO
             CREATE TABLE IF NOT EXISTS cart_articles (
                 cart_id    INTEGER NOT NULL REFERENCES carts(id),
                 article_id INTEGER NOT NULL REFERENCES articles(id),
+                quantity   INTEGER NOT NULL DEFAULT 1,
                 PRIMARY KEY (cart_id, article_id)
             );
         ');

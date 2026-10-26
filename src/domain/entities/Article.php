@@ -26,6 +26,11 @@ class Article {
      * @var float
      */
     private float $price;
+    /**
+     * Quantite de l'article dans un panier
+     * @var int
+     */
+    private int $quantity;
 
     /**
      * Contructeur de Article
@@ -33,12 +38,14 @@ class Article {
      * @param string $name
      * @param string $description
      * @param float $price
+     * @param int $quantity
      */
-    public function __construct(int $id, string $name, string $description, float $price) {
+    public function __construct(int $id, string $name, string $description, float $price, int $quantity = 1) {
         $this->id = $id;
         $this->name = $name;
         $this->description = $description;
         $this->price = $price;
+        $this->quantity = $quantity;
     }
 
     /**
@@ -71,5 +78,13 @@ class Article {
      */
     public function getPrice(): float {
         return $this->price;
+    }
+
+    /**
+     * Getter de la quantite
+     * @return int
+     */
+    public function getQuantity(): int {
+        return $this->quantity;
     }
 }
