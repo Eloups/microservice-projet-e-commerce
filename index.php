@@ -6,6 +6,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use MicroserviceProjetECommerce\Adapters\RoutingAdapter;
 use MicroserviceProjetECommerce\Adapters\SqliteDatabaseAdapter;
+use MicroserviceProjetECommerce\Adapters\SqliteEventAdapter;
 use MicroserviceProjetECommerce\Router\Router;
 use MicroserviceProjetECommerce\Utils\ErrorResponse;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -16,7 +17,8 @@ $router = new Router();
 $router->post('cart_add_article', '/cart/addArticle', function (int $cartId, int $articleId): array {
     $routingAdapter = new RoutingAdapter();
     $databaseAdapter = new SqliteDatabaseAdapter();
-    $cart = $routingAdapter->runAddArticleToCastCase($cartId, $articleId, $databaseAdapter);
+    $eventAdapter = new SqliteEventAdapter();
+    $cart = $routingAdapter->runAddArticleToCastCase($cartId, $articleId, $databaseAdapter, $eventAdapter);
 
     // Normalisation du panier en tableau brut, l'encodage JSON final
     // est fait en fin de script sur la reponse du controleur

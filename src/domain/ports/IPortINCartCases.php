@@ -10,7 +10,8 @@ interface IPortINCartCases {
      * @param int $cartId
      * @param int $articleId
      * @param IPortOUTDatabase $databaseAdapter
+     * @param IPortOUTEvent $eventAdapter
      * @return Cart
      */
-    public function runAddArticleToCastCase(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter): Cart;
+    public function runAddArticleToCastCase(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter, IPortOUTEvent $eventAdapter): Cart;
 }

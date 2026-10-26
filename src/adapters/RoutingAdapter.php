@@ -5,6 +5,7 @@ namespace MicroserviceProjetECommerce\Adapters;
 use MicroserviceProjetECommerce\Domain\Entities\Cart;
 use MicroserviceProjetECommerce\Domain\Ports\IPortINCartCases;
 use MicroserviceProjetECommerce\Domain\Ports\IPortOUTDatabase;
+use MicroserviceProjetECommerce\Domain\Ports\IPortOUTEvent;
 use MicroserviceProjetECommerce\Domain\UseCases\AddArticleToCartUseCase;
 
 /**
@@ -12,9 +13,9 @@ use MicroserviceProjetECommerce\Domain\UseCases\AddArticleToCartUseCase;
  */
 class RoutingAdapter implements IPortINCartCases
 {
-    public function runAddArticleToCastCase(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter): Cart
+    public function runAddArticleToCastCase(int $cartId, int $articleId, IPortOUTDatabase $databaseAdapter, IPortOUTEvent $eventAdapter): Cart
     {
         $useCase = new AddArticleToCartUseCase();
-        return $useCase->run($cartId, $articleId, $databaseAdapter);
+        return $useCase->run($cartId, $articleId, $databaseAdapter, $eventAdapter);
     }
 }

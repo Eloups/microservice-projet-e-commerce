@@ -12,6 +12,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use MicroserviceProjetECommerce\Database\Sqlite\SqliteDatabasePDO;
+use MicroserviceProjetECommerce\Database\Sqlite\SqliteEventPDO;
 
 $dbPath = __DIR__ . DIRECTORY_SEPARATOR . 'ecommerce.sqlite';
 
@@ -34,3 +35,12 @@ $db->seedIfEmpty();
 echo "Base creee : $dbPath\n";
 echo "Tables : users, articles, carts, cart_articles\n";
 echo "Seed insere.\n";
+
+// Base dediee aux evenements de l'event bus (fichier separe)
+$eventDbPath = __DIR__ . DIRECTORY_SEPARATOR . 'events.sqlite';
+$eventDb = new SqliteEventPDO($eventDbPath);
+$eventDb->getPDO()->exec('DROP TABLE IF EXISTS events');
+$eventDb->createSchema();
+
+echo "Base evenements creee : $eventDbPath\n";
+echo "Table : events\n";
