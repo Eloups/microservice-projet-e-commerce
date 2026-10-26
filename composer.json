@@ -20,6 +20,8 @@
         "phpstan/phpstan": "*"
     },
     "require": {
-        "symfony/routing": "^8.1"
+        "symfony/routing": "^8.1",
+        "symfony/serializer": "^8.1",
+        "symfony/property-access": "^8.1"
     }
 }
