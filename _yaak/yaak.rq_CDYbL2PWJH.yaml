@@ -2,17 +2,13 @@ type: http_request
 model: http_request
 id: rq_CDYbL2PWJH
 createdAt: 2026-10-20T16:10:13.309223900
-updatedAt: 2026-10-26T08:31:09.126244500
+updatedAt: 2026-10-26T08:35:37.608452900
 workspaceId: wk_FtLuYtMKXD
 folderId: null
 authentication: {}
 authenticationType: null
 body:
-  text: |-
-    {
-      "cartId": 1,
-      "articleId": 10
-    }
+  text: "{\n  \"cartId\": 1,\n  \"articleId\": 1\n  \n}"
 bodyType: application/json
 description: ''
 headers:

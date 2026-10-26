@@ -7,6 +7,7 @@ require __DIR__ . '/vendor/autoload.php';
 use MicroserviceProjetECommerce\Adapters\RoutingAdapter;
 use MicroserviceProjetECommerce\Adapters\SqliteDatabaseAdapter;
 use MicroserviceProjetECommerce\Router\Router;
+use MicroserviceProjetECommerce\Utils\ErrorResponse;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -29,10 +30,7 @@ $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $match = $router->match($path, $method);
 
 if ($match === null) {
-    http_response_code(404);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Route introuvable']);
-    exit;
+    ErrorResponse::send(404, 'Route introuvable');
 }
 
 $controller = $match['_controller'];
@@ -43,13 +41,21 @@ $cartId = (int) ($body['cartId'] ?? $_POST['cartId'] ?? $_GET['cartId'] ?? 0);
 $articleId = (int) ($body['articleId'] ?? $_POST['articleId'] ?? $_GET['articleId'] ?? 0);
 
 if ($cartId <= 0 || $articleId <= 0) {
-    http_response_code(400);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Parametres requis : cartId (entier) et articleId (entier)']);
-    exit;
+    ErrorResponse::send(400, 'Parametres requis : cartId (entier) et articleId (entier)');
 }
 
-$response = $controller($cartId, $articleId);
+try {
+    $response = $controller($cartId, $articleId);
+} catch (PDOException $e) {
+    // PDOException etend RuntimeException : a catcher avant elle
+    ErrorResponse::send(500, $e->getMessage());
+} catch (RuntimeException $e) {
+    // Erreur metier attendue (panier ou article inconnu)
+    ErrorResponse::send(404, $e->getMessage());
+} catch (Throwable $e) {
+    // Fallback global : toute erreur inattendue
+    ErrorResponse::send(500, $e->getMessage());
+}
 
 http_response_code(200);
 header('Content-Type: application/json');
