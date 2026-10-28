@@ -1,0 +1,42 @@
+type: http_request
+model: http_request
+id: rq_CDYbL2PWJH
+createdAt: 2026-10-20T16:10:13.309223900
+updatedAt: 2026-10-26T10:01:37.163276100
+workspaceId: wk_FtLuYtMKXD
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "cartId": 1,
+      "articleId": 1
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: BCz9kgCK82
+method: POST
+name: Add article to cart
+sortPriority: -1792512613306.0
+url: 127.0.0.1:3000/cart/addArticle
+urlParameters: []
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

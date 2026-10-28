@@ -1,0 +1,28 @@
+{
+    "name": "eloud/microservice-projet-e-commerce",
+    "scripts": {
+        "dev": "php -S 127.0.0.1:3000 index.php",
+        "db-init": "php data/init.php",
+        "panne-on": "php data/panne-on.php",
+        "lint": "vendor/bin/phpstan analyse index.php src"
+    },
+    "autoload": {
+        "psr-4": {
+            "MicroserviceProjetECommerce\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Eloups",
+            "email": "eloudeedee@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "*"
+    },
+    "require": {
+        "symfony/routing": "^8.1",
+        "symfony/serializer": "^8.1",
+        "symfony/property-access": "^8.1"
+    }
+}

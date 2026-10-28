@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_sJyTgYqpzk
+createdAt: 2026-10-26T10:51:45.676737500
+updatedAt: 2026-10-26T10:53:01.291649400
+workspaceId: wk_FtLuYtMKXD
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "cartId": 1
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: t9shbc0kGc
+method: POST
+name: Validate cart
+sortPriority: -1792512613306.0
+url: 127.0.0.1:3000/cart/validate
+urlParameters: []
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

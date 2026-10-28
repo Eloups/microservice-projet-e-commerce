@@ -1,0 +1,4 @@
+/vendor/
+data/ecommerce.sqlite
+data/events.sqlite
+data/logs/app.log
