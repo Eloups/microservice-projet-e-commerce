@@ -1,0 +1,36 @@
+type: http_request
+model: http_request
+id: rq_ksGJoq3o8G
+createdAt: 2026-10-28T08:35:54.155562300
+updatedAt: 2026-10-28T08:36:03.880838900
+workspaceId: wk_FtLuYtMKXD
+folderId: null
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: ''
+sortPriority: -1792512613306.0
+url: 127.0.0.1:3000/events/pending
+urlParameters: []
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0
+settingHttpVersion:
+  enabled: false
+  value: auto

@@ -3,6 +3,7 @@
     "scripts": {
         "dev": "php -S 127.0.0.1:3000 index.php",
         "db-init": "php data/init.php",
+        "panne-on": "php data/panne-on.php",
         "lint": "vendor/bin/phpstan analyse index.php src"
     },
     "autoload": {

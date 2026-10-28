@@ -34,6 +34,10 @@ class SqliteDatabasePDO
         $this->pdo = new PDO('sqlite:' . $dbPath);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        // Echec rapide (2 s) si la base est verrouillee (ex: panne simulee) :
+        // sans cela, l'attente par defaut depasse le max_execution_time du
+        // serveur web et la requete meurt avant d'atteindre le catch -> 503
+        $this->pdo->setAttribute(PDO::ATTR_TIMEOUT, 2);
         $this->pdo->exec('PRAGMA foreign_keys = ON');
     }
 

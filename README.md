@@ -88,7 +88,18 @@ curl -X POST http://127.0.0.1:3000/cart/validate \
 
 ### Simulation de panne
 
-TODO
+Le script [data/panne-on.php](data/panne-on.php) (commande `composer run panne-on`)
+simule une panne du stockage metier : il pose un verrou **EXCLUSIF** sur
+`data/ecommerce.sqlite` dans une transaction ouverte. Tant qu'il tourne :
+
+- toute requete sur la base metier echoue (`database is locked`) apres 2 s
+  (delai force via `PDO::ATTR_TIMEOUT` dans
+  [src/database/sqlite/SqliteDatabasePDO.php](src/database/sqlite/SqliteDatabasePDO.php))
+- le service repond `503` proprement via le catch `PDOException` d'[index.php](index.php)
+- `data/events.sqlite` (event bus, fichier separé) reste operationnel
+
+`Ctrl+C` (ou tuer le script) leve la panne : la transaction est annulee,
+le verrou est libere et le service repart sans perte de donnees.
 
 ### tracing d'un flux
 
@@ -105,12 +116,44 @@ TODO
 
 ### Interaction externe
 
-TODO
+Un consommateur externe (autre microservice, batch...) consulte la file
+d'evenements via le port entrant
+[IPortINEventCases](src/domain/ports/IPortINEventCases.php) expose par la
+route `GET /events/pending?limit=10` (repond 200 meme pendant une panne
+de la base metier) :
+
+```bash
+curl "http://127.0.0.1:3000/events/pending"
+```
 
 ### Panne simulée + comportement résilient
 
-TODO
+Scenario complet (serveur lance avec `php -S 127.0.0.1:3000 index.php`) :
+
+1. `POST /cart/addArticle` -> `200` (nominal)
+2. `composer run panne-on` dans un autre terminal -> PANNE ACTIVE
+3. `POST /cart/addArticle` -> `503 {"code":503,"message":"Service momentanement indisponible..."}`
+   - degradation propre : aucun crash, l'evenement n'est pas publie
+     (l'ajout echoue avant la publication)
+4. `GET /events/pending` -> `200` : l'event bus (base separee) reste
+   joignable pendant la panne (isolation)
+5. `Ctrl+C` sur le script de panne
+6. `POST /cart/addArticle` -> `200` : reprise sans perte
 
 ### Logs corrélés
 
-TODO
+Chaque requete recoit un identifiant unique (`X-Request-Id`, fourni par le
+client ou genere dans [index.php](index.php)) :
+
+- renvoye dans l'en-tete de reponse
+- journalise dans `data/logs/app.log` par
+  [src/utils/Logger.php](src/utils/Logger.php) (lignes JSON)
+- toutes les erreurs passer par `ErrorResponse` sont logguees
+
+Exemple : la requete `req_1f3caa...` ci-dessous est tracable de bout en
+bout, y compris sa degradation 503 pendant la panne :
+
+```json
+{"timestamp":"...","level":"info","requestId":"req_1f3caa378d613cb2","message":"requete recue","method":"POST","path":"/cart/addArticle"}
+{"timestamp":"...","level":"error","requestId":"req_1f3caa378d613cb2","message":"Service momentanement indisponible (stockage indisponible)","code":503,"status":503}
+```
