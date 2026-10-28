@@ -17,26 +17,32 @@ Ce microservice comprend la gestion des paniers de notre site.
 
 ### Étapes
 
+Installer les dependances :
 ```bash
-# 1. Installer les dependances
 composer install
+```
 
-# 2. Initialiser les bases SQLite
-#    - data/ecommerce.sqlite : donnees metier (users, articles, carts, cart_articles)
-#    - data/events.sqlite    : evenements de l'event bus
+- Initialiser les bases SQLite
+  - data/ecommerce.sqlite : donnees metier (users, articles, carts, cart_articles)
+  - data/events.sqlite    : evenements de l'event bus
+```bash
 composer run db-init
+```
 
-# 3. Lancer le serveur de developpement sur http://127.0.0.1:3000
+Lancer le serveur de developpement sur http://127.0.0.1:3000
+```bash
 php -S 127.0.0.1:3000 index.php
 ```
 
 ### Autres commandes
 
+Analyse statique (phpstan)
 ```bash
-# Analyse statique (phpstan)
 composer run lint
+```
 
-# Reinitialiser les deux bases (efface paniers et evenements, reinsert le seed)
+Reinitialiser les deux bases (efface paniers et evenements, reinsert le seed)
+```bash
 composer run db-init
 ```
 
@@ -44,20 +50,28 @@ composer run db-init
 
 Les requetes sont preconfigurees pour **Yaak** dans le dossier [_yaak](_yaak/) :
 importez ce dossier dans Yaak (File > Import), le workspace **TP-architecture**
-contient les deux appels ci-dessous, prets a executer contre `127.0.0.1:3000`.
+contient les trois appels ci-dessous, prets a executer contre `127.0.0.1:3000`.
 
 Ou en ligne de commande avec curl :
 
+Ajouter un article a un panier
 ```bash
-# Ajouter un article a un panier
 curl -X POST http://127.0.0.1:3000/cart/addArticle \
   -H "Content-Type: application/json" \
   -d '{"cartId": 1, "articleId": 2}'
+```
 
-# Valider un panier (consomme ses evenements en attente)
+Valider un panier (consomme ses evenements en attente)
+```bash
 curl -X POST http://127.0.0.1:3000/cart/validate \
   -H "Content-Type: application/json" \
   -d '{"cartId": 1}'
+```
+
+Consulter les evenements en attente de l'event bus (consommateur externe,
+parametre optionnel `limit`, 10 par defaut)
+```bash
+curl "http://127.0.0.1:3000/events/pending?limit=10"
 ```
 
 ## Localisation travail demandé
@@ -123,9 +137,9 @@ curl -X POST http://127.0.0.1:3000/cart/addArticle \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: demo-flux-1" \
   -d '{"cartId": 1, "articleId": 2}'
-
-grep demo-flux-1 data/logs/app.log
 ```
+
+Vous pouvez consulter les logs ici : [data/logs/app.log](data/logs/app.log)
 
 Resultat : chaque couche traversee apparait dans l'ordre :
 
@@ -145,11 +159,67 @@ aucune ecriture, aucune publication, degradation 503 tracee.
 ## Démonstrations
 ### Action port IN
 
-TODO
+Les routes ne parlent jamais directement aux use cases ni aux entites :
+l'entry point ([index.php](index.php)) appelle uniquement le port entrant
+[IPortINCartCases](src/domain/ports/IPortINCartCases.php), implemente par
+[RoutingAdapter](src/adapters/RoutingAdapter.php), qui delegue aux use
+cases du domaine :
+
+```
+route POST /cart/addArticle -> IPortINCartCases::runAddArticleToCastCase
+  -> AddArticleToCartUseCase -> ports OUT (Database, Event Bus)
+```
+
+Demonstration (apres `composer run db-init`) :
+
+```bash
+curl -X POST http://127.0.0.1:3000/cart/addArticle \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: demo-portin" \
+  -d '{"cartId": 1, "articleId": 2}'
+```
+
+Reponse (entite Cart normalisee par le serializer Symfony, en-tete
+`X-Request-Id: demo-portin` renvoye) :
+
+```json
+{"id":1,"user":{"id":1,"name":"Dupont","firstname":"Alice","email":"alice.dupont@example.com"},"isValidate":false,"articles":[{"id":2,"name":"Souris ergonomique","description":"Souris verticale sans fil","price":54.5,"quantity":1}]}
+```
+
+Les erreurs metier sont aussi portees par le port IN : panier inconnu ->
+`404`, panier deja valide -> `409` (via
+[CartAlreadyValidatedException](src/domain/errors/CartAlreadyValidatedException.php)).
 
 ### Publication d'un événement
 
-TODO
+L'ajout d'un article publie `cart.article_added` sur le port OUT
+[IPortOUTEvent](src/domain/ports/IPortOUTEvent.php) (decision prise dans
+le use case, persiste dans `data/events.sqlite` par
+[SqliteEventAdapter](src/adapters/SqliteEventAdapter.php)).
+
+Demonstration enchainant publication puis lecture de la file :
+
+Ajout : publie l'evenement
+```bash
+curl -X POST http://127.0.0.1:3000/cart/addArticle \
+  -H "Content-Type: application/json" \
+  -d '{"cartId": 1, "articleId": 2}'
+```
+
+Lecture de la file : l'evenement est la, en attente
+```bash
+curl "http://127.0.0.1:3000/events/pending"
+```
+
+Reponse du second appel (evenement en attente, payload non consomme) :
+
+```json
+[{"id":1,"name":"cart.article_added","payload":{"cartId":1,"articleId":2,"quantity":1},"created_at":"2026-10-28 12:44:58"}]
+```
+
+La validation d'un panier publie de la meme facon `cart.validated`
+et consomme les evenements `cart.article_added` en attente du panier
+(voir [ValidateCartUseCase](src/domain/useCases/ValidateCartUseCase.php)).
 
 ### Interaction externe
 
