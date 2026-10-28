@@ -12,7 +12,7 @@ Ce microservice comprend la gestion des paniers de notre site.
 ## Installation
 ### Prérequis
 
-- PHP 8.1 ou supérieur (extension `pdo_sqlite` activée)
+- PHP 8.5 ou supérieur (extension `pdo_sqlite` activée)
 - Composer
 
 ### Étapes
