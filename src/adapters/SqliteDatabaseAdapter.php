@@ -10,6 +10,7 @@ use MicroserviceProjetECommerce\Domain\Entities\Cart;
 use MicroserviceProjetECommerce\Domain\Entities\User;
 use MicroserviceProjetECommerce\Domain\Errors\CartAlreadyValidatedException;
 use MicroserviceProjetECommerce\Domain\Ports\IPortOUTDatabase;
+use MicroserviceProjetECommerce\Utils\Logger;
 use RuntimeException;
 
 /**
@@ -47,6 +48,7 @@ class SqliteDatabaseAdapter implements IPortOUTDatabase
         }
 
         $this->database->addArticleToCart($cartId, $articleId);
+        Logger::log('info', 'port OUT Database : article ajoute au panier', ['cartId' => $cartId, 'articleId' => $articleId]);
 
         return $this->fetchCart($cartId);
     }
@@ -65,6 +67,7 @@ class SqliteDatabaseAdapter implements IPortOUTDatabase
         }
 
         $this->database->validateCart($cartId);
+        Logger::log('info', 'port OUT Database : panier valide', ['cartId' => $cartId]);
 
         return $this->fetchCart($cartId);
     }

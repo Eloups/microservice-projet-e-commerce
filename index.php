@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\Serializer;
 $requestId = $_SERVER['HTTP_X_REQUEST_ID'] ?? ('req_' . bin2hex(random_bytes(8)));
 Logger::setRequestId($requestId);
 header('X-Request-Id: ' . $requestId);
+$requestStart = microtime(true);
 
 $router = new Router();
 $serializer = new Serializer([new ObjectNormalizer()]);
@@ -77,6 +78,8 @@ if ($match === null) {
     ErrorResponse::send(404, 'Route introuvable');
 }
 
+Logger::log('info', 'route matchee', ['route' => $match['_route']]);
+
 $controller = $match['_controller'];
 
 // Parametres de la requete : corps JSON, formulaire, ou query string
@@ -104,7 +107,10 @@ try {
     ErrorResponse::send(500, $e->getMessage());
 }
 
-Logger::log('info', 'reponse envoyee', ['status' => 200]);
+Logger::log('info', 'reponse envoyee', [
+    'status' => 200,
+    'durationMs' => round((microtime(true) - $requestStart) * 1000, 1),
+]);
 
 http_response_code(200);
 header('Content-Type: application/json');

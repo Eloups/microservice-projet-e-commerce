@@ -6,6 +6,7 @@ namespace MicroserviceProjetECommerce\Adapters;
 
 use MicroserviceProjetECommerce\Database\Sqlite\SqliteEventPDO;
 use MicroserviceProjetECommerce\Domain\Ports\IPortOUTEvent;
+use MicroserviceProjetECommerce\Utils\Logger;
 
 /**
  * Adaptateur sortant (driven) : relie le port IPortOUTEvent du domaine
@@ -30,6 +31,7 @@ class SqliteEventAdapter implements IPortOUTEvent
     public function publish(string $name, array $payload): void
     {
         $this->database->publish($name, $payload);
+        Logger::log('info', 'port OUT Event Bus : evenement publie', ['name' => $name, 'payload' => $payload]);
     }
 
     /**

@@ -103,7 +103,44 @@ le verrou est libere et le service repart sans perte de donnees.
 
 ### tracing d'un flux
 
-TODO
+Chaque etape du parcours d'une requete est journalisee dans
+`data/logs/app.log` :
+
+- requete recue + route matchee => [index.php](index.php)
+- appel du use case (port IN) => [src/adapters/RoutingAdapter.php](src/adapters/RoutingAdapter.php)
+- ecriture BDD (port OUT Database) => [src/adapters/SqliteDatabaseAdapter.php](src/adapters/SqliteDatabaseAdapter.php)
+- publication d'evenement (port OUT Event Bus) => [src/adapters/SqliteEventAdapter.php](src/adapters/SqliteEventAdapter.php)
+- reponse envoyee avec duree => [index.php](index.php)
+
+Le domaine n'est pas instrumente : les traces vivent uniquement dans
+l'entry point et les adaptateurs.
+
+**Demonstration** : le client fixe son identifiant via l'en-tete
+`X-Request-Id`, puis `grep` reconstitue le flux complet :
+
+```bash
+curl -X POST http://127.0.0.1:3000/cart/addArticle \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: demo-flux-1" \
+  -d '{"cartId": 1, "articleId": 2}'
+
+grep demo-flux-1 data/logs/app.log
+```
+
+Resultat : chaque couche traversee apparait dans l'ordre :
+
+```json
+{"level":"info","requestId":"demo-flux-1","message":"requete recue","method":"POST","path":"/cart/addArticle"}
+{"level":"info","requestId":"demo-flux-1","message":"route matchee","route":"cart_add_article"}
+{"level":"info","requestId":"demo-flux-1","message":"port IN : use case AddArticleToCart","cartId":1,"articleId":2}
+{"level":"info","requestId":"demo-flux-1","message":"port OUT Database : article ajoute au panier","cartId":1,"articleId":2}
+{"level":"info","requestId":"demo-flux-1","message":"port OUT Event Bus : evenement publie","name":"cart.article_added","payload":{"cartId":1,"articleId":2,"quantity":1}}
+{"level":"info","requestId":"demo-flux-1","message":"reponse envoyee","status":200,"durationMs":83.3}
+```
+
+Pendant une panne simulee (cf. section precedente), le meme grep sur une
+requete echouee montre le flux qui s'interrompt au port OUT Database :
+aucune ecriture, aucune publication, degradation 503 tracee.
 
 ## Démonstrations
 ### Action port IN
